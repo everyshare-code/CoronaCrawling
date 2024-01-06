@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-import os
+import os,threading,csv
 
 def getList(newsList):
     contents = []
@@ -18,6 +18,24 @@ def getList(newsList):
         print(link)
     print(contents)
     return contents
+def saveCsv(contents):
+    csv_folder_path=os.path.join(os.getcwd(),'csv')
+    filename = 'corona19.csv'
+    if not os.path.isdir(csv_folder_path):
+        os.mkdir('csv')
+
+    contents_csv=[]
+    col=['이미지','제목','요약','링크']
+    for content in contents:
+        content_csv={}
+        for idx,(key,value) in enumerate(content):
+            content_csv[col[idx]]=value
+        contents_csv.append(content_csv)
+    with open(os.path.join(csv_folder_path,filename),'w',newline='',encoding='utf-8') as f:
+        writer=csv.DictWriter(f,fieldnames=col)
+        writer.writeheader()
+        writer.writerows(contents_csv)
+
 def crawling(args):
     driver=None
     try:
@@ -52,12 +70,13 @@ def crawling(args):
 
         content_xpath='#news_List > ul > li'
         # newsList = driver.find_elements(By.XPATH,content_xpath)
-        newsList=WebDriverWait(driver,20).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, content_xpath)))
+        newsList=WebDriverWait(driver,20).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, content_xpath)))
         contents=getList(newsList)
+        thread = threading.Thread(target=saveCsv(contents))
+        thread.start()
         return contents
     except Exception as e:
-        newsList=WebDriverWait(driver,20).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, content_xpath)))
-        contents=getList(newsList)
+        print(e)
         return contents
     finally:
         if driver:
