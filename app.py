@@ -6,7 +6,7 @@ from api.index import Index
 import os
 
 
-TEMPLATE_FOLDER=os.path.join(os.getcwd(),'dist')
+TEMPLATE_FOLDER=os.path.join(os.getcwd(),'front-end')
 
 STATIC_FOLDER=os.path.join(TEMPLATE_FOLDER,'static')
 

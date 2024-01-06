@@ -3,5 +3,5 @@ module.exports = defineConfig({
   transpileDependencies: true,
   assetsDir:'./static',
   publicPath: '/',
-  outputDir:'../dist'
+  outputDir:'../front-end'
 })

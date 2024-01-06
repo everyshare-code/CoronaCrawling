@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 import os,threading,csv
 
-def getList(newsList):
+def get_list(newsList):
     contents = []
     for idx,news in enumerate(newsList):
         link=news.find_element(By.XPATH,f'//*[@id="news_List"]/ul/li[{idx+1}]/a').get_attribute('href')
@@ -18,17 +18,16 @@ def getList(newsList):
         print(link)
     print(contents)
     return contents
-def saveCsv(contents):
+def save_csv(contents):
     csv_folder_path=os.path.join(os.getcwd(),'csv')
     filename = 'corona19.csv'
     if not os.path.isdir(csv_folder_path):
         os.mkdir('csv')
-
     contents_csv=[]
     col=['이미지','제목','요약','링크']
     for content in contents:
         content_csv={}
-        for idx,(key,value) in enumerate(content):
+        for idx,(key,value) in enumerate(content.items()):
             content_csv[col[idx]]=value
         contents_csv.append(content_csv)
     with open(os.path.join(csv_folder_path,filename),'w',newline='',encoding='utf-8') as f:
@@ -71,8 +70,8 @@ def crawling(args):
         content_xpath='#news_List > ul > li'
         # newsList = driver.find_elements(By.XPATH,content_xpath)
         newsList=WebDriverWait(driver,20).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, content_xpath)))
-        contents=getList(newsList)
-        thread = threading.Thread(target=saveCsv(contents))
+        contents=get_list(newsList)
+        thread = threading.Thread(target=save_csv,args=(contents,))
         thread.start()
         return contents
     except Exception as e:
