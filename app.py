@@ -8,9 +8,6 @@ import os
 
 TEMPLATE_FOLDER=os.path.join(os.getcwd(),'front-end')
 
-STATIC_FOLDER=os.path.join(TEMPLATE_FOLDER,'static')
-
-print(STATIC_FOLDER)
 
 app=Flask(__name__,template_folder=TEMPLATE_FOLDER,static_folder=TEMPLATE_FOLDER,static_url_path='')
 CORS(app)
