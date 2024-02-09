@@ -41,7 +41,6 @@ def crawling(args):
         driver_path=f'{os.path.join(os.path.dirname(__file__),"chromedriver.exe")}'
         service = Service(executable_path=driver_path)
         options = webdriver.ChromeOptions()
-        # options.add_experimental_option("detach", True)  # 드라이버랑 detach하자
         options.add_argument('headless')
         options.add_argument('--disable-gpu')
         options.add_argument('window-size=1920x1080')
@@ -49,7 +48,6 @@ def crawling(args):
             'User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
             'Chrome/120.0.0.0 Safari/537.36')
         driver = webdriver.Chrome(service=service, options=options)
-        # driver.implicitly_wait(random.randint(3, 5))  # 랜덤하게 3~5초 사이의 초로 지연 설정
         driver.get('https://mediahub.seoul.go.kr/corona19/news/keywordNewsList.do')
 
         category=args['category']
@@ -62,10 +60,6 @@ def crawling(args):
             category_btns=WebDriverWait(driver, 10).until(category_ec)
             driver.execute_script(f'arguments[0].ariaHidden="false";arguments[0].style.display="inline-block";',category_btns[int(category)-1])
             category_btns[int(category)-1].click()
-
-
-
-        # WebDriverWait(driver,20).until(lambda d:driver.execute_script("return document.readyState === 'complete'"))
 
         content_xpath='#news_List > ul > li'
         # newsList = driver.find_elements(By.XPATH,content_xpath)
