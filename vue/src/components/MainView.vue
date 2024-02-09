@@ -46,7 +46,7 @@
         this.isActive[idx]=true;
         this.modal=true;
         console.log(this.categories[idx])
-        axios.get('http://192.168.0.49:5001/corona',{
+        axios.get('http://localhost:5000/corona',{
           params:{
             category:idx?idx+1:null
           }
