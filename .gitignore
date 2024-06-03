@@ -125,7 +125,7 @@ dmypy.json
 
 # vue.js
 node_modules/
-
+vue/
 # Local env files
 .env.local
 .env.*.local
@@ -143,3 +143,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.swp
+

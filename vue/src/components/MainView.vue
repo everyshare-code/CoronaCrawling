@@ -1,6 +1,5 @@
 <template>
     <!-- As a link -->
-    
     <nav class="navbar bg-body-tertiary px-3">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">서울시 코로나19 주요뉴스</a>
@@ -21,8 +20,7 @@
       </div>
   </template>
   <script>
-
-  import axios from 'axios';
+  import { mapActions, mapState } from 'vuex'
   import ContentView from '@/components/ContentView.vue'
   import LoadingView from '@/components/LoadingView.vue'
   
@@ -40,31 +38,32 @@
         contents:null
       }
     },
+    computed: {
+      ...mapState({
+        contents: state => state.newsData
+      })
+    },
     methods: {
-      fetchNews(idx){
+      ...mapActions(['fetchNewsData']),
+      fetchNews(idx) {
         this.isActive.fill(false);
-        this.isActive[idx]=true;
-        this.modal=true;
-        console.log(this.categories[idx])
-        axios.get('http://localhost:5000/corona',{
-          params:{
-            category:idx?idx+1:null
-          }
-        })
-        .then(res=>{
-          this.contents=res.data
-          this.complete=true
-          this.modal=false;
-        })
-        .catch(error=>console.log(error))
-      },
-      initialize(){
-        this.fetchNews(null)
-      }
-     
+        this.isActive[idx] = true;
+        this.modal = true;
+
+        this.fetchNewsData(idx)
+          .then(data => {
+            this.contents = data;  // 스토어에서 또는 요청 결과에서 데이터 할당
+            this.complete = true;
+            this.modal = false;
+          })
+          .catch(error => console.log(error));
+    },
+    initialize() {
+      this.fetchNews(null);
+    }
     },
     mounted(){
-        this.isActive=new Array(8).fill(false);
+        this.isActive=new Array(this.categories.length).fill(false);
         this.initialize();
     }
   }

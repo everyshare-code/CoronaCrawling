@@ -5,7 +5,6 @@ import json
 
 
 class Corona(Resource):
-
     def get(self):
         parser=reqparse.RequestParser()
         parser.add_argument('category',required=False,location='args')

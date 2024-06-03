@@ -3,8 +3,19 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 import os,threading,csv
+
+def chrome_driver():
+    service = Service(ChromeDriverManager().install())
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("detach", True)
+    options.add_argument('headless')
+    options.add_argument('--no-sandbox')  # 추가
+    options.add_argument('--disable-dev-shm-usage')  # 추가
+    options.add_argument('window-size=1920x1080')
+    return webdriver.Chrome(service=service, options=options)
 
 def get_list(newsList):
     contents = []
@@ -12,7 +23,7 @@ def get_list(newsList):
         link=news.find_element(By.XPATH,f'//*[@id="news_List"]/ul/li[{idx+1}]/a').get_attribute('href')
         img = news.find_element(By.XPATH, f'//*[@id="news_List"]/ul/li[{idx+1}]/a/div[1]/img').get_attribute('src')
         title = news.find_element(By.XPATH, f'//*[@id="news_List"]/ul/li[{idx+1}]/a/div[2]/h3').get_attribute('textContent')
-        summary = news.find_element(By.XPATH, f'//*[@id="news_List"]/ul/li[{idx+1}]/a/div[2]/p').get_attribute('textContent')
+        summary = news.find_element(By.XPATH, f'//*[@id="news_List"]/ul/li[{idx+1}]/a/div[2]/p').text
         content = {'img': img, 'title': title, 'summary': summary,'link':link}
         contents.append(content)
         print(link)
@@ -38,18 +49,8 @@ def save_csv(contents):
 def crawling(args):
     driver=None
     try:
-        driver_path=f'{os.path.join(os.path.dirname(__file__),"chromedriver.exe")}'
-        service = Service(executable_path=driver_path)
-        options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        options.add_argument('--disable-gpu')
-        options.add_argument('window-size=1920x1080')
-        options.add_argument(
-            'User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-            'Chrome/120.0.0.0 Safari/537.36')
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = chrome_driver()
         driver.get('https://mediahub.seoul.go.kr/corona19/news/keywordNewsList.do')
-
         category=args['category']
         if category:
             if category=='8':
@@ -62,7 +63,6 @@ def crawling(args):
             category_btns[int(category)-1].click()
 
         content_xpath='#news_List > ul > li'
-        # newsList = driver.find_elements(By.XPATH,content_xpath)
         newsList=WebDriverWait(driver,20).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, content_xpath)))
         contents=get_list(newsList)
         thread = threading.Thread(target=save_csv,args=(contents,))
