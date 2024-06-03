@@ -125,7 +125,7 @@ dmypy.json
 
 # vue.js
 node_modules/
-vue/
+
 # Local env files
 .env.local
 .env.*.local
